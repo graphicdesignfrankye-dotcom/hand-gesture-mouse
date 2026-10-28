@@ -1,0 +1,84 @@
+name: Build e Release
+
+# Compila l'app per macOS (.dmg) e Windows (.exe) a ogni tag "v*" (es. v1.0.0) e pubblica i file nella Release.
+# Si puo' lanciare anche a mano da Actions > "Build e Release" > Run workflow (crea solo gli artifact, senza Release).
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Librerie
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+      - name: Test della logica
+        run: python tests/test_core.py
+      - name: Compila il .app
+        run: |
+          pyinstaller --noconfirm HandGestureMouse.spec
+          # firma "ad-hoc" con requisito fisso: i permessi di macOS restano validi tra una versione e l'altra
+          codesign --force --sign - -r='designated => identifier "com.francesco.handgesturemouse"' "dist/Hand Gesture Mouse.app"
+          codesign --verify --deep --strict "dist/Hand Gesture Mouse.app"
+      - name: Crea il .dmg
+        run: |
+          mkdir dmg
+          cp -R "dist/Hand Gesture Mouse.app" dmg/
+          ln -s /Applications dmg/Applications
+          hdiutil create -volname "Hand Gesture Mouse" -srcfolder dmg -ov -format UDZO Hand-Gesture-Mouse-macOS.dmg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: Hand-Gesture-Mouse-macOS.dmg
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Librerie
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-windows.txt pyinstaller
+      - name: Test della logica e della parte Windows
+        run: |
+          python tests/test_core.py
+          python tests/test_win.py
+      - name: Compila l'.exe
+        run: >
+          pyinstaller --noconfirm --windowed --name "Hand Gesture Mouse" --icon icons/AppIcon.ico
+          --collect-all mediapipe --collect-all pygrabber --exclude-module matplotlib
+          --hidden-import pystray._win32 --hidden-import pynput.keyboard._win32 --hidden-import pynput.mouse._win32
+          hand_mouse_win.py
+      - name: Crea lo zip
+        run: Compress-Archive -Path "dist/Hand Gesture Mouse" -DestinationPath Hand-Gesture-Mouse-Windows.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-zip
+          path: Hand-Gesture-Mouse-Windows.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [macos, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: files
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: files/*
+          generate_release_notes: true

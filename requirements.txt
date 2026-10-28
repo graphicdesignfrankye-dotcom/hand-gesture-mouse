@@ -1,0 +1,9 @@
+opencv-python>=4.8
+mediapipe>=0.10.9,<0.10.30
+pyobjc-framework-Quartz>=10.0
+numpy<2
+pyobjc-framework-Cocoa>=10.0
+pyobjc-framework-AVFoundation>=10.0
+pyobjc-framework-ApplicationServices>=10.0
+pyobjc-framework-CoreMedia>=10.0
+pyobjc-framework-libdispatch>=10.0

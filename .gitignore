@@ -1,0 +1,13 @@
+# ambiente e file generati
+.venv/
+build/
+dist/
+__pycache__/
+*.pyc
+*.log
+*.zip
+*.dmg
+.DS_Store
+
+# anteprime delle icone (l'icona definitiva e' in icons/)
+icons_preview/

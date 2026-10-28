@@ -1,0 +1,7 @@
+opencv-python>=4.8
+mediapipe>=0.10.9,<0.10.30
+numpy<2
+pystray>=0.19
+pillow>=10
+pynput>=1.7
+pygrabber>=0.2
