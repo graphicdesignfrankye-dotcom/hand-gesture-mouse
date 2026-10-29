@@ -416,9 +416,12 @@ LOG_PATH = os.path.join(os.path.expanduser("~"), "Hand Gesture Mouse.log")      
 def log(msg):
     """Scrive su file (l'app non ha console) e su stderr."""
     line = f"{time.strftime('%Y-%m-%d %H:%M:%S')} {msg}"
-    print(line, file=sys.stderr)
     try:
-        with open(LOG_PATH, "a") as f:
+        print(line, file=sys.stderr)
+    except Exception:   # console non UTF-8 (Windows) o senza console: il log su file basta
+        pass
+    try:
+        with open(LOG_PATH, "a", encoding="utf-8", errors="replace") as f:   # UTF-8: su Windows il predefinito (cp1252) non sa scrivere frecce e simboli
             f.write(line + "\n")
     except OSError:
         pass
@@ -426,7 +429,7 @@ def log(msg):
 
 def load_settings():
     try:
-        with open(SETTINGS_PATH) as f:
+        with open(SETTINGS_PATH, encoding="utf-8") as f:
             data = json.load(f)
     except (OSError, ValueError):
         return
@@ -489,7 +492,7 @@ def save_settings():
     data["CALL_POINTS"] = CALL_POINTS
     data["HAND_MODE"] = HAND_MODE
     data["CAMERA_ID"] = CAMERA_ID
-    with open(SETTINGS_PATH, "w") as f:
+    with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 

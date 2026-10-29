@@ -421,5 +421,16 @@ check("assegnazioni ricaricate", core.GESTURE_ACTIONS["rock"] == "macro1")
 core.set_action_text({"fullscreen": ("Schermo intero", "Schermo intero (F11)")})
 check("nomi azioni per sistema", dict((k, t_) for k, _, t_ in core.ACTIONS)["fullscreen"] == "Schermo intero (F11)")
 
+# --- codifica di Windows: log e impostazioni con simboli fuori da cp1252 (frecce, spunte) ---------------------
+import subprocess
+code = ("import sys; sys.path.insert(0, %r); import gesture_core as c, os, tempfile; d = tempfile.mkdtemp(); "
+        "c.LOG_PATH = os.path.join(d, 'l.txt'); c.SETTINGS_PATH = os.path.join(d, 's.json'); "
+        "c.log('Desktop virtuale a sinistra (Win+Ctrl+\u2190) \u2713'); c.save_settings(); c.load_settings(); "
+        "print(ascii(open(c.LOG_PATH, encoding='utf-8').read().strip()))") % os.path.join(os.path.dirname(__file__), "..")
+env = dict(os.environ, LC_ALL="C", LANG="C", PYTHONUTF8="0", PYTHONCOERCECLOCALE="0", PYTHONIOENCODING="ascii")
+res_ = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, timeout=60)
+check("log e impostazioni con la codifica predefinita non-UTF-8 (come Windows)",
+      res_.returncode == 0 and "\\u2190" in res_.stdout, (res_.returncode, res_.stderr[-300:]))
+
 print("\nTUTTO OK" if not failures else f"\nFALLITI: {failures}")
 sys.exit(1 if failures else 0)
