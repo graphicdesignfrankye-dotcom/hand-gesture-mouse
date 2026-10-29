@@ -67,12 +67,13 @@ jobs:
           $v = if ("${{ github.ref_name }}" -match '^v(.+)$') { $Matches[1] } else { "0.0.0" }
           & $iscc "/DAppVersion=$v" installer_win.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Move-Item dist/Hand-Gesture-Mouse-Windows-Setup.exe .
       - uses: actions/upload-artifact@v4
         with:
           name: windows-files
           path: |
             Hand-Gesture-Mouse-Windows.zip
-            dist/Hand-Gesture-Mouse-Windows-Setup.exe
+            Hand-Gesture-Mouse-Windows-Setup.exe
 
   release:
     # pubblica anche se una delle due piattaforme fallisce: il file riuscito resta scaricabile
