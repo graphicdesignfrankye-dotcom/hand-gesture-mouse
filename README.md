@@ -16,96 +16,9 @@ Per usare l'app **non serve installare Python né altro**: i file qui sotto sono
 
 Le versioni si compilano da sole con GitHub Actions (`.github/workflows/release.yml`) ogni volta che si crea un tag `v*`.
 
-## File del progetto
+## Come si usa
 
-| File | A cosa serve |
-|---|---|
-| `gesture_core.py` | **Logica comune**: gesti, impostazioni, azioni, sequenze, smoothing, anteprima. Uguale per tutti i sistemi |
-| `hand_mouse.py` | Parte **macOS**: eventi Quartz, webcam AVFoundation, icona barra dei menu, finestra Impostazioni (AppKit) |
-| `hand_mouse_win.py` | Parte **Windows**: eventi `user32`, webcam DirectShow, icona area di notifica, Impostazioni (tkinter) |
-| `requirements.txt` / `requirements-windows.txt` | Librerie per macOS / per Windows |
-| `run.sh`, `build_app.sh`, `HandGestureMouse.spec` | Avvio e creazione del `.app` (macOS) |
-| `setup_win.bat`, `run_win.bat`, `build_exe.bat` | Installazione, avvio e creazione dell'`.exe` (Windows) |
-| `tests/` | Prove automatiche senza webcam (`test_core.py`, `test_win.py`, `smoke_mac.py`) |
-
-## Windows
-
-> La versione Windows è stata scritta e provata **solo con test automatici su un Mac** (user32 simulato):
-> sul PC reale potrebbero servire piccoli aggiustamenti. Il log è in `%LOCALAPPDATA%\Hand Gesture Mouse\log.txt`.
-
-**Cosa copiare sul PC** (cartella `hand-gesture-mouse`): `gesture_core.py`, `hand_mouse_win.py`,
-`requirements-windows.txt`, `setup_win.bat`, `run_win.bat`, `build_exe.bat`, questo `README.md` (e, se vuoi,
-`tests/`). **Non** copiare `.venv/`, `dist/`, `build/`, `Hand Gesture Mouse.app`, `hand_mouse.py`, `run.sh`.
-Se vuoi portare le impostazioni del Mac, `settings.json` si può copiare in `%APPDATA%\Hand Gesture Mouse\`
-(le scorciatoie e le sequenze registrate sul Mac però non valgono su Windows: vanno rifatte).
-
-1. Installa **Python 3.11** (3.9–3.12 vanno bene, MediaPipe non supporta le versioni più recenti) da python.org,
-   spuntando «Add python.exe to PATH».
-2. Doppio click su `setup_win.bat` (crea `.venv` e installa le librerie).
-3. Doppio click su `run_win.bat` per avviare. Nell'anteprima: **Q** esci, **S** Impostazioni, **P** pausa.
-4. L'icona verde nell'area di notifica (vicino all'orologio, forse dentro la freccia ^) ha il menu: pausa,
-   Impostazioni, esci. Diventa rossa in pausa e arancione durante la registrazione di una sequenza.
-5. Per un `.exe` senza terminale: `build_exe.bat` → `dist\Hand Gesture Mouse\Hand Gesture Mouse.exe`.
-
-Differenze rispetto al Mac: scorciatoie di Windows (F11 schermo intero, Win+Tab vista attività, Win+Ctrl+←/→ desktop
-virtuali, Alt+Tab, Win+Giù, Win+Shift+S screenshot, Win+L blocca, Win+S ricerca); «monitor successivo» sposta il
-cursore tra gli schermi; i comandi non arrivano alle finestre avviate «come amministratore» a meno che anche questa app lo sia.
-
-## macOS
-
-### Per sviluppatori: eseguire dal codice (qui serve Python)
-
-Serve solo se vuoi modificare il programma o lanciarlo senza compilarlo.
-
-```bash
-cd hand-gesture-mouse
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip   # il pip vecchio non trova i pacchetti per macOS e prova a compilare pyobjc
-pip install -r requirements.txt
-```
-
-Nota: MediaPipe supporta Python 3.9–3.12. Se `pip install` fallisce su una versione più recente, crea il venv con 3.11 o 3.12.
-
-### Avvio
-
-Con un solo comando (attiva il venv e avvia l'app):
-
-```bash
-./run.sh
-```
-
-Oppure a mano, con il venv già attivo:
-
-```bash
-python hand_mouse.py
-```
-
-### App macOS (.app)
-
-Per avere un'app che si apre con un doppio click, senza terminale:
-
-```bash
-./build_app.sh
-```
-
-Crea `dist/Hand Gesture Mouse.app` (circa 300 MB, include Python, OpenCV e MediaPipe). Trascinala in
-Applicazioni e aprila. I permessi **Fotocamera** e **Accessibilità** vanno dati all'app stessa
-("Hand Gesture Mouse"), non più al terminale.
-
-Per creare anche il **DMG** da condividere (finestra con sfondo e freccia «trascina in Applicazioni»): `./make_dmg.sh` →
-`dist/Hand-Gesture-Mouse-macOS.dmg`. Lo stesso DMG viene creato da GitHub Actions a ogni tag `v*`.
-
-Dopo ogni modifica a `hand_mouse.py` va rieseguito `./build_app.sh`. La firma è "ad-hoc", quindi
-con la firma a requisito fisso i permessi dovrebbero restare validi anche dopo una ricompilazione; se macOS
-li richiede, in Accessibilità togli l'app con `−` e riaggiungila.
-
-### Permessi (primo avvio)
-
-1. **Fotocamera** – macOS lo chiede la prima volta. Se non lo fa, abilita il tuo terminale in
-   Impostazioni di Sistema → Privacy e sicurezza → **Fotocamera**.
-2. **Accessibilità** – serve per muovere il cursore e cliccare. Aggiungi il tuo terminale in
-   Impostazioni di Sistema → Privacy e sicurezza → **Accessibilità**, poi riavvia il terminale.
+Dopo l'installazione l'app vive nella barra dei menu (macOS) o vicino all'orologio (Windows). Gesti e impostazioni:
 
 ## Gesti
 
@@ -260,3 +173,100 @@ Tutte le impostazioni sono nel blocco `CONFIG` in cima a `hand_mouse.py`:
 
 - Il cambio monitor sposta il cursore; non sposta le finestre da un monitor all'altro.
 - Il tasto `Q` viene letto dalla finestra di anteprima, quindi quella finestra deve essere in primo piano; altrimenti usa Ctrl+C.
+
+
+## Per sviluppatori
+
+Serve solo per modificare il programma o lanciarlo dal codice (qui **serve Python**). Chi usa l'app scarica il file dalle
+Release e non deve fare nulla di quanto segue.
+
+### File del progetto
+
+| File | A cosa serve |
+|---|---|
+| `gesture_core.py` | **Logica comune**: gesti, impostazioni, azioni, sequenze, smoothing, anteprima. Uguale per tutti i sistemi |
+| `hand_mouse.py` | Parte **macOS**: eventi Quartz, webcam AVFoundation, icona barra dei menu, finestra Impostazioni (AppKit) |
+| `hand_mouse_win.py` | Parte **Windows**: eventi `user32`, webcam DirectShow, icona area di notifica, Impostazioni (tkinter) |
+| `requirements.txt` / `requirements-windows.txt` | Librerie per macOS / per Windows |
+| `run.sh`, `build_app.sh`, `HandGestureMouse.spec` | Avvio e creazione del `.app` (macOS) |
+| `setup_win.bat`, `run_win.bat`, `build_exe.bat` | Installazione, avvio e creazione dell'`.exe` (Windows) |
+| `tests/` | Prove automatiche senza webcam (`test_core.py`, `test_win.py`, `smoke_mac.py`) |
+
+### Windows
+
+> La versione Windows è stata scritta e provata **solo con test automatici su un Mac** (user32 simulato):
+> sul PC reale potrebbero servire piccoli aggiustamenti. Il log è in `%LOCALAPPDATA%\Hand Gesture Mouse\log.txt`.
+
+**Cosa copiare sul PC** (cartella `hand-gesture-mouse`): `gesture_core.py`, `hand_mouse_win.py`,
+`requirements-windows.txt`, `setup_win.bat`, `run_win.bat`, `build_exe.bat`, questo `README.md` (e, se vuoi,
+`tests/`). **Non** copiare `.venv/`, `dist/`, `build/`, `Hand Gesture Mouse.app`, `hand_mouse.py`, `run.sh`.
+Se vuoi portare le impostazioni del Mac, `settings.json` si può copiare in `%APPDATA%\Hand Gesture Mouse\`
+(le scorciatoie e le sequenze registrate sul Mac però non valgono su Windows: vanno rifatte).
+
+1. Installa **Python 3.11** (3.9–3.12 vanno bene, MediaPipe non supporta le versioni più recenti) da python.org,
+   spuntando «Add python.exe to PATH».
+2. Doppio click su `setup_win.bat` (crea `.venv` e installa le librerie).
+3. Doppio click su `run_win.bat` per avviare. Nell'anteprima: **Q** esci, **S** Impostazioni, **P** pausa.
+4. L'icona verde nell'area di notifica (vicino all'orologio, forse dentro la freccia ^) ha il menu: pausa,
+   Impostazioni, esci. Diventa rossa in pausa e arancione durante la registrazione di una sequenza.
+5. Per un `.exe` senza terminale: `build_exe.bat` → `dist\Hand Gesture Mouse\Hand Gesture Mouse.exe`.
+
+Differenze rispetto al Mac: scorciatoie di Windows (F11 schermo intero, Win+Tab vista attività, Win+Ctrl+←/→ desktop
+virtuali, Alt+Tab, Win+Giù, Win+Shift+S screenshot, Win+L blocca, Win+S ricerca); «monitor successivo» sposta il
+cursore tra gli schermi; i comandi non arrivano alle finestre avviate «come amministratore» a meno che anche questa app lo sia.
+
+### macOS
+
+#### Installazione dal codice
+
+Serve solo se vuoi modificare il programma o lanciarlo senza compilarlo.
+
+```bash
+cd hand-gesture-mouse
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip   # il pip vecchio non trova i pacchetti per macOS e prova a compilare pyobjc
+pip install -r requirements.txt
+```
+
+Nota: MediaPipe supporta Python 3.9–3.12. Se `pip install` fallisce su una versione più recente, crea il venv con 3.11 o 3.12.
+
+#### Avvio
+
+Con un solo comando (attiva il venv e avvia l'app):
+
+```bash
+./run.sh
+```
+
+Oppure a mano, con il venv già attivo:
+
+```bash
+python hand_mouse.py
+```
+
+#### App macOS (.app)
+
+Per avere un'app che si apre con un doppio click, senza terminale:
+
+```bash
+./build_app.sh
+```
+
+Crea `dist/Hand Gesture Mouse.app` (circa 300 MB, include Python, OpenCV e MediaPipe). Trascinala in
+Applicazioni e aprila. I permessi **Fotocamera** e **Accessibilità** vanno dati all'app stessa
+("Hand Gesture Mouse"), non più al terminale.
+
+Per creare anche il **DMG** da condividere (finestra con sfondo e freccia «trascina in Applicazioni»): `./make_dmg.sh` →
+`dist/Hand-Gesture-Mouse-macOS.dmg`. Lo stesso DMG viene creato da GitHub Actions a ogni tag `v*`.
+
+Dopo ogni modifica a `hand_mouse.py` va rieseguito `./build_app.sh`. La firma è "ad-hoc", quindi
+con la firma a requisito fisso i permessi dovrebbero restare validi anche dopo una ricompilazione; se macOS
+li richiede, in Accessibilità togli l'app con `−` e riaggiungila.
+
+#### Permessi (primo avvio)
+
+1. **Fotocamera** – macOS lo chiede la prima volta. Se non lo fa, abilita il tuo terminale in
+   Impostazioni di Sistema → Privacy e sicurezza → **Fotocamera**.
+2. **Accessibilità** – serve per muovere il cursore e cliccare. Aggiungi il tuo terminale in
+   Impostazioni di Sistema → Privacy e sicurezza → **Accessibilità**, poi riavvia il terminale.
