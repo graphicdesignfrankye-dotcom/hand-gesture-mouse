@@ -30,16 +30,12 @@ jobs:
           # firma "ad-hoc" con requisito fisso: i permessi di macOS restano validi tra una versione e l'altra
           codesign --force --sign - -r='designated => identifier "com.francesco.handgesturemouse"' "dist/Hand Gesture Mouse.app"
           codesign --verify --deep --strict "dist/Hand Gesture Mouse.app"
-      - name: Crea il .dmg
-        run: |
-          mkdir dmg
-          cp -R "dist/Hand Gesture Mouse.app" dmg/
-          ln -s /Applications dmg/Applications
-          hdiutil create -volname "Hand Gesture Mouse" -srcfolder dmg -ov -format UDZO Hand-Gesture-Mouse-macOS.dmg
+      - name: Crea il .dmg (finestra con sfondo e scorciatoia ad Applicazioni)
+        run: ./make_dmg.sh
       - uses: actions/upload-artifact@v4
         with:
           name: macos-dmg
-          path: Hand-Gesture-Mouse-macOS.dmg
+          path: dist/Hand-Gesture-Mouse-macOS.dmg
 
   windows:
     runs-on: windows-latest

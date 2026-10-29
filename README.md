@@ -5,7 +5,8 @@ Su macOS gli eventi passano da Quartz, su Windows da `user32` (ctypes): pyautogu
 
 ## Download
 
-Dalla pagina **Releases** del repository scarichi l'ultima versione già pronta:
+Per usare l'app **non serve installare Python né altro**: i file qui sotto sono programmi completi, con tutto dentro
+(Python, OpenCV e MediaPipe compresi). Dalla pagina **Releases** del repository scarichi l'ultima versione già pronta:
 
 - **macOS:** `Hand-Gesture-Mouse-macOS.dmg` (Apple Silicon). Aprilo e trascina l'app in Applicazioni. L'app non è firmata
   da uno sviluppatore Apple: al primo avvio fai click destro sull'app → **Apri** → **Apri** (oppure, da Terminale:
@@ -52,7 +53,9 @@ cursore tra gli schermi; i comandi non arrivano alle finestre avviate «come amm
 
 ## macOS
 
-### Installazione
+### Per sviluppatori: eseguire dal codice (qui serve Python)
+
+Serve solo se vuoi modificare il programma o lanciarlo senza compilarlo.
 
 ```bash
 cd hand-gesture-mouse
@@ -89,6 +92,9 @@ Per avere un'app che si apre con un doppio click, senza terminale:
 Crea `dist/Hand Gesture Mouse.app` (circa 300 MB, include Python, OpenCV e MediaPipe). Trascinala in
 Applicazioni e aprila. I permessi **Fotocamera** e **Accessibilità** vanno dati all'app stessa
 ("Hand Gesture Mouse"), non più al terminale.
+
+Per creare anche il **DMG** da condividere (finestra con sfondo e freccia «trascina in Applicazioni»): `./make_dmg.sh` →
+`dist/Hand-Gesture-Mouse-macOS.dmg`. Lo stesso DMG viene creato da GitHub Actions a ogni tag `v*`.
 
 Dopo ogni modifica a `hand_mouse.py` va rieseguito `./build_app.sh`. La firma è "ad-hoc", quindi
 con la firma a requisito fisso i permessi dovrebbero restare validi anche dopo una ricompilazione; se macOS
