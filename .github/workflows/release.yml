@@ -60,10 +60,19 @@ jobs:
           hand_mouse_win.py
       - name: Crea lo zip
         run: Compress-Archive -Path "dist/Hand Gesture Mouse" -DestinationPath Hand-Gesture-Mouse-Windows.zip
+      - name: Crea l'installatore Setup.exe (Inno Setup)
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup --no-progress -y }
+          $v = if ("${{ github.ref_name }}" -match '^v(.+)$') { $Matches[1] } else { "0.0.0" }
+          & $iscc "/DAppVersion=$v" installer_win.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@v4
         with:
-          name: windows-zip
-          path: Hand-Gesture-Mouse-Windows.zip
+          name: windows-files
+          path: |
+            Hand-Gesture-Mouse-Windows.zip
+            dist/Hand-Gesture-Mouse-Windows-Setup.exe
 
   release:
     # pubblica anche se una delle due piattaforme fallisce: il file riuscito resta scaricabile

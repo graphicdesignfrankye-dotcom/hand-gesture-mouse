@@ -11,8 +11,11 @@ Per usare l'app **non serve installare Python né altro**: i file qui sotto sono
 - **macOS:** `Hand-Gesture-Mouse-macOS.dmg` (Apple Silicon). Aprilo e trascina l'app in Applicazioni. L'app non è firmata
   da uno sviluppatore Apple: al primo avvio fai click destro sull'app → **Apri** → **Apri** (oppure, da Terminale:
   `xattr -dr com.apple.quarantine "/Applications/Hand Gesture Mouse.app"`). Poi concedi **Fotocamera** e **Accessibilità**.
-- **Windows:** `Hand-Gesture-Mouse-Windows.zip`. Estrai la cartella e avvia `Hand Gesture Mouse.exe`. Se compare l'avviso
-  di SmartScreen («Windows ha protetto il PC») scegli *Ulteriori informazioni* → *Esegui comunque*.
+- **Windows:** `Hand-Gesture-Mouse-Windows-Setup.exe`. Avvialo e segui l'installazione (non servono i permessi di
+  amministratore): crea il collegamento nel menu Start e, se vuoi, sul Desktop. Se compare l'avviso di SmartScreen
+  («Windows ha protetto il PC») scegli *Ulteriori informazioni* → *Esegui comunque*. In alternativa c'è
+  `Hand-Gesture-Mouse-Windows.zip` (versione portatile): estrai **tutta** la cartella e avvia `Hand Gesture Mouse.exe`
+  da lì dentro, senza spostare l'`.exe` da solo.
 
 Le versioni si compilano da sole con GitHub Actions (`.github/workflows/release.yml`) ogni volta che si crea un tag `v*`.
 
