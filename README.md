@@ -274,3 +274,7 @@ li richiede, in Accessibilità togli l'app con `−` e riaggiungila.
    Impostazioni di Sistema → Privacy e sicurezza → **Fotocamera**.
 2. **Accessibilità** – serve per muovere il cursore e cliccare. Aggiungi il tuo terminale in
    Impostazioni di Sistema → Privacy e sicurezza → **Accessibilità**, poi riavvia il terminale.
+
+## Licenza
+
+Progetto rilasciato con licenza **MIT**: vedi il file [LICENSE](LICENSE). Copyright (c) 2026 Francesco Argento.
